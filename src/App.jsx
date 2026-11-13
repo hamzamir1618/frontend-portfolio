@@ -122,7 +122,7 @@ function WorkItem({ project, previewMode, onSelect }) {
 }
 
 export default function App() {
-  const [previewMode, setPreviewMode] = useState('screenshot')
+  const [previewMode, setPreviewMode] = useState('live')
   const [activeProject, setActiveProject] = useState(null)
   const [viewport, setViewport] = useState('desktop')
   const [copied, setCopied] = useState(false)
@@ -258,20 +258,20 @@ export default function App() {
               <button
                 type="button"
                 className={`toggle-link ${
-                  previewMode === 'screenshot' ? 'active' : ''
-                }`}
-                onClick={() => setPreviewMode('screenshot')}
-              >
-                [Still]
-              </button>
-              <button
-                type="button"
-                className={`toggle-link ${
                   previewMode === 'live' ? 'active' : ''
                 }`}
                 onClick={() => setPreviewMode('live')}
               >
                 [Live Canvas]
+              </button>
+              <button
+                type="button"
+                className={`toggle-link ${
+                  previewMode === 'screenshot' ? 'active' : ''
+                }`}
+                onClick={() => setPreviewMode('screenshot')}
+              >
+                [Still]
               </button>
             </div>
           </div>
