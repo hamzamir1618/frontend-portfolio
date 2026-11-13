@@ -223,12 +223,6 @@ export default function App() {
                 Frontend Engineer &amp; <em>UI/UX Designer</em>
               </div>
             </div>
-
-            <p className="masthead-statement">
-              Three years of hands-on practice <em>designing in Figma</em> and
-              building clean, responsive <strong>React interfaces</strong> with
-              zero-friction user flows.
-            </p>
           </div>
         </section>
 
