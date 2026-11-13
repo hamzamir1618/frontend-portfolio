@@ -9,7 +9,7 @@ export const PROFILE = {
   github: 'https://github.com/hamzamir1618',
   linkedin: 'https://linkedin.com/in/hamza-mir',
   resumeUrl: '/Hamza Ahmad Mir - Frontend Dev.pdf',
-  education: 'BS Computer Science — FAST NUCES (2022–2025)',
+  education: 'BS Computer Science — FAST NUCES (2022–2026)',
 }
 
 export const PROJECTS = [
@@ -95,7 +95,7 @@ export const PROJECTS = [
 export const QUICK_STATS = [
   { label: 'Experience', value: '3+ Years', sub: 'UI/UX & Frontend' },
   { label: 'Live Sites', value: '07', sub: 'Deployed on Vercel' },
-  { label: 'Degree', value: 'BS CS', sub: 'FAST NUCES ’25' },
+  { label: 'Degree', value: 'BS CS', sub: 'FAST NUCES ’26' },
   { label: 'Certified', value: 'IBM + fCC', sub: 'Design & Frontend' },
 ]
 

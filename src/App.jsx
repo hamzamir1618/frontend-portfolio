@@ -325,7 +325,7 @@ export default function App() {
             <div className="index-list">
               <div className="index-row">
                 <span className="row-primary">B.S. Computer Science</span>
-                <span className="row-secondary">FAST NUCES · 2022–2025</span>
+                <span className="row-secondary">FAST NUCES · 2022–2026</span>
               </div>
               <div className="index-row">
                 <span className="row-primary">

@@ -324,6 +324,12 @@ button {
   gap: 16px;
 }
 
+.work-item:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  width: calc((100% - 40px) / 2);
+  justify-self: center;
+}
+
 .work-frame {
   position: relative;
   width: 100%;
@@ -597,5 +603,8 @@ button {
   .index-section {
     grid-template-columns: 1fr;
     gap: 32px;
+  }
+  .work-item:last-child:nth-child(odd) {
+    width: 100%;
   }
 }
