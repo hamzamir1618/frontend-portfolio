@@ -8,7 +8,7 @@ export const PROFILE = {
   phone: '+92 345 691 0939',
   github: 'https://github.com/hamzamir1618',
   linkedin: 'https://linkedin.com/in/hamza-mir',
-  resumeUrl: '/Hamza-Ahmad-Mir-UI-UX-Resume.pdf',
+  resumeUrl: '/Hamza Ahmad Mir - Frontend Dev.pdf',
   education: 'BS Computer Science — FAST NUCES (2022–2025)',
 }
 

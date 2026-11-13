@@ -196,11 +196,10 @@ export default function App() {
             </a>
             <a
               href={PROFILE.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              download="Hamza Ahmad Mir - Frontend Dev.pdf"
               className="spec-link"
             >
-              <sup>03</sup>Resume PDF ↗
+              <sup>03</sup>Resume PDF ↓
             </a>
             <button type="button" className="spec-link" onClick={copyEmail}>
               <sup>04</sup>
