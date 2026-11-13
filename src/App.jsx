@@ -4,22 +4,22 @@ import LogoLoop from './components/LogoLoop'
 import { PROFILE, PROJECTS } from './data/projects'
 
 const STACK_ITEMS = [
-  'React.js',
-  'Figma',
-  'JavaScript ES6+',
-  'HTML5 & CSS3',
-  'Design Systems',
-  'Server-Driven UI',
-  'Auto-Layout & Handoff',
-  'UX Teardowns',
-  'Adobe Photoshop & Illustrator',
-  'Unity Canvas UI',
-].map((label) => ({
-  title: label,
+  { label: 'React.js', voice: 'sans', num: '01' },
+  { label: 'Figma Prototyping', voice: 'serif', num: '02' },
+  { label: 'JavaScript ES6+', voice: 'sans', num: '03' },
+  { label: 'Design Systems', voice: 'serif', num: '04' },
+  { label: 'HTML5 & CSS3', voice: 'sans', num: '05' },
+  { label: 'Server-Driven UI', voice: 'serif', num: '06' },
+  { label: 'Auto-Layout Handoff', voice: 'sans', num: '07' },
+  { label: 'UX Teardowns', voice: 'serif', num: '08' },
+  { label: 'Adobe Suite', voice: 'sans', num: '09' },
+  { label: 'Unity Canvas UI', voice: 'serif', num: '10' },
+].map((item) => ({
+  title: item.label,
   node: (
-    <span className="loop-item">
-      <span className="loop-dot" />
-      {label}
+    <span className={`kinetic-word ${item.voice}`}>
+      {item.label}
+      <sup className="kinetic-sup">{item.num}</sup>
     </span>
   ),
 }))
@@ -94,9 +94,9 @@ function WorkItem({ project, previewMode, onSelect }) {
 
       <div className="work-caption">
         <div className="caption-left">
-          <span className="work-index">{project.index}</span>
+          <span className="work-index">/{project.index}</span>
           <h3 className="work-title">{project.title}</h3>
-          <span className="work-type">— {project.type}</span>
+          <span className="work-type">{project.type}</span>
         </div>
 
         <div className="caption-actions">
@@ -105,7 +105,7 @@ function WorkItem({ project, previewMode, onSelect }) {
             className="caption-link"
             onClick={() => onSelect(project)}
           >
-            Preview
+            [Preview]
           </button>
           <a
             href={project.url}
@@ -170,60 +170,75 @@ export default function App() {
       </div>
 
       <main className="canvas">
-        {/* Minimal Open-Canvas Header */}
-        <header className="topbar">
-          <div className="identity-line">
-            <span className="name">{PROFILE.name}</span>
-            <span className="role">Frontend &amp; UI/UX</span>
+        {/* Top Monospace Index Strip */}
+        <header className="spec-bar">
+          <div className="spec-left">
+            <span>FOLIO ’26</span>
+            <span className="spec-tag">ISLAMABAD, PK</span>
           </div>
 
-          <nav className="links" aria-label="Links">
+          <nav className="spec-links" aria-label="Links">
             <a
               href={PROFILE.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-link"
+              className="spec-link"
             >
-              GitHub
+              <sup>01</sup>GitHub ↗
             </a>
             <a
               href={PROFILE.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-link"
+              className="spec-link"
             >
-              LinkedIn
+              <sup>02</sup>LinkedIn ↗
             </a>
             <a
               href={PROFILE.resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-link"
+              className="spec-link"
             >
-              Resume
+              <sup>03</sup>Resume PDF ↗
             </a>
-            <button type="button" className="text-link" onClick={copyEmail}>
-              {copied ? 'Copied email' : PROFILE.email}
+            <button type="button" className="spec-link" onClick={copyEmail}>
+              <sup>04</sup>
+              {copied ? 'Copied Email' : PROFILE.email}
             </button>
           </nav>
         </header>
 
-        {/* Short, Direct Intro */}
-        <section className="intro">
-          <p>
-            <strong>Frontend developer and UI/UX designer</strong> based in
-            Islamabad. 3 years of experience designing in Figma and building
-            responsive web interfaces in React.
-          </p>
+        {/* Monumental Typographic Masthead */}
+        <section className="masthead">
+          <h1 className="hero-name">
+            <span>HAMZA</span>
+            <span className="hero-name-serif">Ahmad Mir</span>
+          </h1>
+
+          <div className="masthead-subgrid">
+            <div className="masthead-role-block">
+              <span className="role-kicker">DISCIPLINE</span>
+              <div className="role-display">
+                Frontend Engineer &amp; <em>UI/UX Designer</em>
+              </div>
+            </div>
+
+            <p className="masthead-statement">
+              Three years of hands-on practice <em>designing in Figma</em> and
+              building clean, responsive <strong>React interfaces</strong> with
+              zero-friction user flows.
+            </p>
+          </div>
         </section>
 
-        {/* Frameless Hairline LogoLoop */}
+        {/* Kinetic Typographic LogoLoop Ribbon */}
         <div className="loop-strip" aria-label="Toolkit">
           <LogoLoop
             logos={STACK_ITEMS}
-            speed={42}
-            gap={28}
-            logoHeight={18}
+            speed={46}
+            gap={40}
+            logoHeight={24}
             fadeOut={true}
             fadeOutWidth={0.1}
             pauseOnHover={true}
@@ -234,9 +249,10 @@ export default function App() {
         {/* Selected Frontend Work */}
         <section aria-label="Selected Frontends">
           <div className="work-header">
-            <span className="section-label">
-              Selected Frontends (01 — 0{PROJECTS.length})
-            </span>
+            <h2 className="work-heading">
+              Selected <em>Frontends</em>
+              <span className="work-count">(01 — 0{PROJECTS.length})</span>
+            </h2>
 
             <div className="view-toggle">
               <button
@@ -246,9 +262,8 @@ export default function App() {
                 }`}
                 onClick={() => setPreviewMode('screenshot')}
               >
-                Still
+                [Still]
               </button>
-              <span>/</span>
               <button
                 type="button"
                 className={`toggle-link ${
@@ -256,7 +271,7 @@ export default function App() {
                 }`}
                 onClick={() => setPreviewMode('live')}
               >
-                Live Canvas
+                [Live Canvas]
               </button>
             </div>
           </div>
@@ -276,10 +291,12 @@ export default function App() {
           </div>
         </section>
 
-        {/* Frameless Typographic Index (Replaces Boxes & Skill Cards) */}
+        {/* Editorial Typographic Index */}
         <section className="index-section" aria-label="Background and UX Work">
           <div className="index-col">
-            <span className="section-label">UI/UX Case Studies &amp; Craft</span>
+            <h2 className="index-heading">
+              Product <em>UX &amp; Systems</em>
+            </h2>
             <div className="index-list">
               <div className="index-row">
                 <span className="row-primary">Food Ordering Mobile App</span>
@@ -309,7 +326,9 @@ export default function App() {
           </div>
 
           <div className="index-col">
-            <span className="section-label">Education &amp; Credentials</span>
+            <h2 className="index-heading">
+              Background &amp; <em>Credentials</em>
+            </h2>
             <div className="index-list">
               <div className="index-row">
                 <span className="row-primary">B.S. Computer Science</span>
@@ -338,7 +357,7 @@ export default function App() {
         </section>
 
         <footer className="minimal-footer">
-          <span>{PROFILE.name}</span>
+          <span>{PROFILE.name} — ALL RIGHTS RESERVED</span>
           <span>{PROFILE.location}</span>
         </footer>
       </main>
@@ -381,7 +400,7 @@ export default function App() {
                   Next →
                 </button>
                 <span>
-                  {activeProject.index} — {activeProject.title}
+                  /{activeProject.index} — {activeProject.title}
                 </span>
               </div>
 
