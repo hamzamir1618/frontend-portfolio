@@ -834,7 +834,13 @@ const createEngine = (root, track, config, setLayout) => {
   };
 
   if (typeof ResizeObserver !== 'undefined') {
+    let lastObservedWidth = 0;
     resizeObserver = new ResizeObserver(() => {
+      const w = root.clientWidth;
+      if (!config.current.vertical && lastObservedWidth > 0 && Math.abs(w - lastObservedWidth) < 2) {
+        return;
+      }
+      lastObservedWidth = w;
       measure();
       if (st.geo && st.period > 0) render(performance.now());
       wake();

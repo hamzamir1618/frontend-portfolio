@@ -334,9 +334,20 @@ const SoftAurora = ({
     const applyResize = () => {
       const s = settingsRef.current;
       const rect = container.getBoundingClientRect();
-      const cssWidth = Math.max(1, rect.width);
-      const cssHeight = Math.max(1, rect.height);
-      const ratio = clamp(0.35 + 0.04 * s.noiseFrequency * s.scale, 0.5, 1);
+      const cssWidth = Math.max(1, Math.round(rect.width));
+      const cssHeight = Math.max(1, Math.round(rect.height));
+      // Ignore mobile URL bar height-only jitter during scroll
+      if (
+        size.width > 1 &&
+        cssWidth === size.width &&
+        Math.abs(cssHeight - size.height) < 160
+      ) {
+        return;
+      }
+      const isMobile = cssWidth < 768;
+      const ratio = isMobile
+        ? 0.38
+        : clamp(0.35 + 0.04 * s.noiseFrequency * s.scale, 0.5, 1);
       const width = Math.max(1, Math.round(cssWidth * ratio));
       const height = Math.max(1, Math.round(cssHeight * ratio));
       if (canvas.width !== width || canvas.height !== height) {
@@ -459,6 +470,7 @@ const SoftAurora = ({
     };
 
     const onPointerMove = event => {
+      if (event.pointerType === 'touch') return;
       const spot = locate(event);
       pointer.x = spot.x;
       pointer.y = spot.y;
@@ -466,6 +478,7 @@ const SoftAurora = ({
       wake();
     };
     const onPointerDown = event => {
+      if (event.pointerType === 'touch') return;
       const s = settingsRef.current;
       const spot = locate(event);
       if (!spot.inside || !s.clickPulse || reduced) return;

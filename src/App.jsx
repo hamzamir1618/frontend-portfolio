@@ -24,21 +24,28 @@ const STACK_ITEMS = [
   ),
 }))
 
-function WorkItem({ project, previewMode, onSelect }) {
+function WorkItem({ project, previewMode, isMobile, onSelect }) {
   const frameRef = useRef(null)
   const [scale, setScale] = useState(0.38)
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [inView, setInView] = useState(false)
 
   const screenshotUrl = `https://api.microlink.io/?url=${encodeURIComponent(
     project.url
   )}&screenshot=true&meta=false&embed=screenshot.url`
 
+  // Measure width only when horizontal width actually changes (ignores mobile URL bar height changes)
   useEffect(() => {
     const el = frameRef.current
     if (!el) return
+    let lastW = 0
     const update = () => {
-      if (el.clientWidth > 0) setScale(el.clientWidth / 1440)
+      const w = el.clientWidth
+      if (w > 0 && Math.abs(w - lastW) >= 2) {
+        lastW = w
+        setScale(w / 1440)
+      }
     }
     update()
     const ro = new ResizeObserver(update)
@@ -46,7 +53,34 @@ function WorkItem({ project, previewMode, onSelect }) {
     return () => ro.disconnect()
   }, [])
 
-  const useIframe = previewMode === 'live' || failed
+  // Virtualize heavy 1440x900 iframes so mobile browsers never run out of memory and crash
+  useEffect(() => {
+    const el = frameRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setInView(true)
+      return
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (isMobile) {
+          // On mobile, strictly mount iframe only while card is actively visible on screen
+          setInView(entry.isIntersecting)
+        } else {
+          // On desktop, mount once within 300px of viewport
+          if (entry.isIntersecting) setInView(true)
+        }
+      },
+      {
+        rootMargin: isMobile ? '-8% 0px -8% 0px' : '300px 0px',
+        threshold: isMobile ? 0.25 : 0.01,
+      }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [isMobile])
+
+  const wantIframe = previewMode === 'live' || failed
+  const mountIframe = wantIframe && inView
 
   return (
     <article className="work-item">
@@ -64,21 +98,25 @@ function WorkItem({ project, previewMode, onSelect }) {
           }
         }}
       >
-        {!loaded && !useIframe && (
+        {!loaded && !mountIframe && (
           <div className="work-placeholder">{project.domain}</div>
         )}
 
-        {!useIframe ? (
+        {/* Base lightweight image layer (prevents blank flashes while scrolling on mobile) */}
+        {!failed && (
           <img
             src={screenshotUrl}
             alt={project.title}
             className="work-img"
             loading="lazy"
+            decoding="async"
             style={{ opacity: loaded ? 1 : 0 }}
             onLoad={() => setLoaded(true)}
             onError={() => setFailed(true)}
           />
-        ) : (
+        )}
+
+        {mountIframe && (
           <div className="work-iframe-wrap">
             <iframe
               src={project.url}
@@ -126,9 +164,22 @@ export default function App() {
   const [activeProject, setActiveProject] = useState(null)
   const [viewport, setViewport] = useState('desktop')
   const [copied, setCopied] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    if (!activeProject) return
+    const mq = window.matchMedia('(max-width: 768px), (pointer: coarse)')
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener?.('change', update)
+    return () => mq.removeEventListener?.('change', update)
+  }, [])
+
+  useEffect(() => {
+    if (!activeProject) {
+      document.body.style.overflow = ''
+      return
+    }
+    document.body.style.overflow = 'hidden'
     const onKey = (e) => {
       if (e.key === 'Escape') setActiveProject(null)
       if (e.key === 'ArrowRight') {
@@ -141,7 +192,10 @@ export default function App() {
       }
     }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
+    }
   }, [activeProject])
 
   const copyEmail = () => {
@@ -157,14 +211,15 @@ export default function App() {
         <SoftAurora
           color1="#94a3b8"
           color2="#475569"
-          speed={0.3}
+          speed={isMobile ? 0.2 : 0.3}
           scale={1.6}
           brightness={0.32}
           bandHeight={0.55}
           bandSpread={1.2}
           spectrum={0.15}
           opacity={0.42}
-          enableMouseInteraction={true}
+          enableMouseInteraction={!isMobile}
+          clickPulse={!isMobile}
           mouseInfluence={0.15}
         />
       </div>
@@ -203,7 +258,7 @@ export default function App() {
             </a>
             <button type="button" className="spec-link" onClick={copyEmail}>
               <sup>04</sup>
-              {copied ? 'Copied Email' : PROFILE.email}
+              {copied ? 'Copied Email' : 'Email'}
             </button>
           </nav>
         </header>
@@ -229,12 +284,12 @@ export default function App() {
         <div className="loop-strip" aria-label="Toolkit">
           <LogoLoop
             logos={STACK_ITEMS}
-            speed={46}
-            gap={40}
-            logoHeight={24}
+            speed={isMobile ? 34 : 46}
+            gap={isMobile ? 28 : 40}
+            logoHeight={isMobile ? 20 : 24}
             fadeOut={true}
-            fadeOutWidth={0.1}
-            pauseOnHover={true}
+            fadeOutWidth={0.08}
+            pauseOnHover={!isMobile}
             draggable={true}
           />
         </div>
@@ -275,6 +330,7 @@ export default function App() {
                 key={project.id}
                 project={project}
                 previewMode={previewMode}
+                isMobile={isMobile}
                 onSelect={(p) => {
                   setViewport('desktop')
                   setActiveProject(p)
@@ -392,39 +448,41 @@ export default function App() {
                 >
                   Next →
                 </button>
-                <span>
+                <span className="modal-project-title">
                   /{activeProject.index} — {activeProject.title}
                 </span>
               </div>
 
               <div className="modal-bar-group">
-                <button
-                  type="button"
-                  className={`toggle-link ${
-                    viewport === 'desktop' ? 'active' : ''
-                  }`}
-                  onClick={() => setViewport('desktop')}
-                >
-                  Desktop
-                </button>
-                <button
-                  type="button"
-                  className={`toggle-link ${
-                    viewport === 'tablet' ? 'active' : ''
-                  }`}
-                  onClick={() => setViewport('tablet')}
-                >
-                  Tablet
-                </button>
-                <button
-                  type="button"
-                  className={`toggle-link ${
-                    viewport === 'mobile' ? 'active' : ''
-                  }`}
-                  onClick={() => setViewport('mobile')}
-                >
-                  Mobile
-                </button>
+                <div className="modal-bar-group modal-device-toggles">
+                  <button
+                    type="button"
+                    className={`toggle-link ${
+                      viewport === 'desktop' ? 'active' : ''
+                    }`}
+                    onClick={() => setViewport('desktop')}
+                  >
+                    Desktop
+                  </button>
+                  <button
+                    type="button"
+                    className={`toggle-link ${
+                      viewport === 'tablet' ? 'active' : ''
+                    }`}
+                    onClick={() => setViewport('tablet')}
+                  >
+                    Tablet
+                  </button>
+                  <button
+                    type="button"
+                    className={`toggle-link ${
+                      viewport === 'mobile' ? 'active' : ''
+                    }`}
+                    onClick={() => setViewport('mobile')}
+                  >
+                    Mobile
+                  </button>
+                </div>
                 <a
                   href={activeProject.url}
                   target="_blank"
@@ -438,7 +496,7 @@ export default function App() {
                   className="toggle-link active"
                   onClick={() => setActiveProject(null)}
                 >
-                  Close [Esc]
+                  Close
                 </button>
               </div>
             </div>
@@ -447,8 +505,9 @@ export default function App() {
               <div
                 className="modal-viewport"
                 style={{
-                  width:
-                    viewport === 'mobile'
+                  width: isMobile
+                    ? '100%'
+                    : viewport === 'mobile'
                       ? '390px'
                       : viewport === 'tablet'
                         ? '768px'
