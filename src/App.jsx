@@ -3,26 +3,88 @@ import SoftAurora from './components/SoftAurora'
 import LogoLoop from './components/LogoLoop'
 import { PROFILE, PROJECTS, SKILL_COLUMNS } from './data/projects'
 
-const STACK_ITEMS = [
-  { label: 'React 18', voice: 'sans', num: '01' },
-  { label: 'TypeScript', voice: 'serif', num: '02' },
-  { label: 'GSAP 3 & ScrollTrigger', voice: 'sans', num: '03' },
-  { label: 'WebGL & Shaders', voice: 'serif', num: '04' },
-  { label: 'Three.js 3D', voice: 'sans', num: '05' },
-  { label: 'Figma Prototyping', voice: 'serif', num: '06' },
-  { label: 'Design Systems', voice: 'sans', num: '07' },
-  { label: 'Server-Driven UI', voice: 'serif', num: '08' },
-  { label: 'Adobe Suite', voice: 'sans', num: '09' },
-  { label: 'Unity Canvas UI', voice: 'serif', num: '10' },
-].map((item) => ({
-  title: item.label,
-  node: (
-    <span className={`kinetic-word ${item.voice}`}>
-      {item.label}
-      <sup className="kinetic-sup">{item.num}</sup>
-    </span>
-  ),
-}))
+// Pure monochrome SVG brand logos for LogoLoop (zero text duplication with the Skills directory)
+const BRAND_LOGOS = [
+  {
+    title: 'React',
+    node: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <circle cx="12" cy="12" r="2.2" fill="currentColor" />
+        <ellipse cx="12" cy="12" rx="10" ry="4.2" />
+        <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)" />
+        <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)" />
+      </svg>
+    ),
+  },
+  {
+    title: 'TypeScript',
+    node: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <rect x="3" y="3" width="18" height="18" rx="2.5" />
+        <path d="M8 11h5M10.5 11v6M17.5 12.5c-.5-.6-1.8-.8-2.4 0-.5.8.2 1.4 1.3 1.8 1.2.4 1.7 1.1 1.2 2-.5.8-1.9.8-2.6 0" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Figma',
+    node: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <path d="M9 3h3v6H9a3 3 0 0 1 0-6Z" />
+        <path d="M12 3h3a3 3 0 0 1 0 6h-3V3Z" />
+        <circle cx="15" cy="12" r="3" />
+        <path d="M9 9h3v6H9a3 3 0 0 1 0-6Z" />
+        <path d="M9 15h3v3a3 3 0 1 1-3-3Z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Three.js',
+    node: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <polygon points="4,4 20,9 9,20" />
+        <polygon points="12,6.5 14.5,14.5 6.5,12" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Vite',
+    node: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <path d="M21 4L12 21 3 4l9 2.5L21 4Z" />
+        <path d="M13 3l-3 7h4l-2 6" />
+      </svg>
+    ),
+  },
+  {
+    title: 'WebGL',
+    node: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <polygon points="12,2 21,7 21,17 12,22 3,17 3,7" />
+        <path d="M12 22V12M21 7l-9 5-9-5" />
+      </svg>
+    ),
+  },
+  {
+    title: 'HTML5',
+    node: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <path d="M4 3h16l-1.5 15L12 21l-6.5-3L4 3Z" />
+        <path d="M8 8h8l-.5 4h-7l.4 3.5 3.1 1 3.1-1 .2-2" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Git',
+    node: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <circle cx="7" cy="6" r="2" />
+        <circle cx="7" cy="18" r="2" />
+        <circle cx="17" cy="12" r="2" />
+        <path d="M7 8v8M9 6.5c4 0 4 5.5 6 5.5" />
+      </svg>
+    ),
+  },
+]
 
 function WorkItem({ project, previewMode, isMobile, onSelect }) {
   const frameRef = useRef(null)
@@ -204,13 +266,7 @@ export default function App() {
       </div>
 
       <main className="canvas">
-        {/* Minimal Edition Strip (Zero Redundant Buttons) */}
-        <header className="spec-bar">
-          <span>FOLIO ’26</span>
-          <span className="spec-tag">{PROFILE.location}</span>
-        </header>
-
-        {/* Monumental Typographic Masthead + Clear Contact Info */}
+        {/* Monumental Typographic Masthead + Contact Directory (Zero Redundant Bars) */}
         <section className="masthead">
           <h1 className="hero-name">
             <span>HAMZA</span>
@@ -222,10 +278,11 @@ export default function App() {
               <div className="role-display">
                 Frontend Developer &amp; <em>UI/UX Designer</em>
               </div>
-              <span className="role-edu">{PROFILE.education}</span>
+              <span className="role-edu">
+                {PROFILE.education} · {PROFILE.location}
+              </span>
             </div>
 
-            {/* Clean, Visible Contact Directory — Each Link Appears Once */}
             <div className="contact-directory" aria-label="Contact Information">
               <div className="contact-row">
                 <span className="contact-label">EMAIL</span>
@@ -275,26 +332,25 @@ export default function App() {
           </div>
         </section>
 
-        {/* Kinetic Typographic LogoLoop Ribbon */}
-        <div className="loop-strip" aria-label="Toolkit">
+        {/* Visual SVG LogoLoop Ribbon (No Duplicate Text Strings) */}
+        <div className="loop-strip" aria-label="Tech Logos">
           <LogoLoop
-            logos={STACK_ITEMS}
-            speed={isMobile ? 34 : 46}
-            gap={isMobile ? 28 : 40}
-            logoHeight={isMobile ? 20 : 24}
+            logos={BRAND_LOGOS}
+            speed={isMobile ? 32 : 42}
+            gap={isMobile ? 44 : 64}
+            logoHeight={22}
             fadeOut={true}
-            fadeOutWidth={0.08}
+            fadeOutWidth={0.1}
             pauseOnHover={!isMobile}
             draggable={true}
           />
         </div>
 
-        {/* Selected Frontend Work (Top Priority) */}
+        {/* Selected Frontend Work */}
         <section id="work" aria-label="Selected Frontends">
           <div className="work-header">
             <h2 className="work-heading">
               Selected <em>Frontends</em>
-              <span className="work-count">(01 — 0{PROJECTS.length})</span>
             </h2>
 
             <div className="view-toggle">
@@ -335,11 +391,11 @@ export default function App() {
           </div>
         </section>
 
-        {/* Clean 4-Column Categorized Skills & Background at the Bottom */}
-        <section id="skills" className="skills-bottom" aria-label="Skills and Background">
+        {/* Clean 4-Column Categorized Skills at the Bottom */}
+        <section id="skills" className="skills-bottom" aria-label="Skills and Capabilities">
           <div className="skills-bottom-header">
             <h2 className="work-heading">
-              Skills &amp; <em>Capabilities</em>
+              Skills &amp; <em>Toolkit</em>
             </h2>
           </div>
 
@@ -359,11 +415,6 @@ export default function App() {
             ))}
           </div>
         </section>
-
-        <footer className="minimal-footer">
-          <span>© 2026 {PROFILE.name}</span>
-          <span>Click any project frame to interact live</span>
-        </footer>
       </main>
 
       {/* Clean Frameless Live Preview Modal */}
