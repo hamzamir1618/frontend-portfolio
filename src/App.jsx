@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
 import SoftAurora from './components/SoftAurora'
 import LogoLoop from './components/LogoLoop'
-import { PROFILE, PROJECTS } from './data/projects'
+import { PROFILE, PROJECTS, SKILL_CATEGORIES } from './data/projects'
 
 const STACK_ITEMS = [
-  { label: 'React.js', voice: 'sans', num: '01' },
-  { label: 'Figma Prototyping', voice: 'serif', num: '02' },
-  { label: 'JavaScript ES6+', voice: 'sans', num: '03' },
-  { label: 'Design Systems', voice: 'serif', num: '04' },
-  { label: 'HTML5 & CSS3', voice: 'sans', num: '05' },
-  { label: 'Server-Driven UI', voice: 'serif', num: '06' },
-  { label: 'Auto-Layout Handoff', voice: 'sans', num: '07' },
-  { label: 'UX Teardowns', voice: 'serif', num: '08' },
+  { label: 'React 18', voice: 'sans', num: '01' },
+  { label: 'TypeScript', voice: 'serif', num: '02' },
+  { label: 'GSAP 3 & ScrollTrigger', voice: 'sans', num: '03' },
+  { label: 'WebGL & Shaders', voice: 'serif', num: '04' },
+  { label: 'Three.js 3D', voice: 'sans', num: '05' },
+  { label: 'Figma Prototyping', voice: 'serif', num: '06' },
+  { label: 'Design Systems', voice: 'sans', num: '07' },
+  { label: 'Server-Driven UI', voice: 'serif', num: '08' },
   { label: 'Adobe Suite', voice: 'sans', num: '09' },
   { label: 'Unity Canvas UI', voice: 'serif', num: '10' },
 ].map((item) => ({
@@ -35,7 +35,6 @@ function WorkItem({ project, previewMode, isMobile, onSelect }) {
     project.url
   )}&screenshot=true&meta=false&embed=screenshot.url`
 
-  // Measure width only when horizontal width actually changes (ignores mobile URL bar height changes)
   useEffect(() => {
     const el = frameRef.current
     if (!el) return
@@ -53,7 +52,6 @@ function WorkItem({ project, previewMode, isMobile, onSelect }) {
     return () => ro.disconnect()
   }, [])
 
-  // Virtualize heavy 1440x900 iframes so mobile browsers never run out of memory and crash
   useEffect(() => {
     const el = frameRef.current
     if (!el || typeof IntersectionObserver === 'undefined') {
@@ -63,10 +61,8 @@ function WorkItem({ project, previewMode, isMobile, onSelect }) {
     const io = new IntersectionObserver(
       ([entry]) => {
         if (isMobile) {
-          // On mobile, strictly mount iframe only while card is actively visible on screen
           setInView(entry.isIntersecting)
         } else {
-          // On desktop, mount once within 300px of viewport
           if (entry.isIntersecting) setInView(true)
         }
       },
@@ -102,7 +98,6 @@ function WorkItem({ project, previewMode, isMobile, onSelect }) {
           <div className="work-placeholder">{project.domain}</div>
         )}
 
-        {/* Base lightweight image layer (prevents blank flashes while scrolling on mobile) */}
         {!failed && (
           <img
             src={screenshotUrl}
@@ -131,10 +126,13 @@ function WorkItem({ project, previewMode, isMobile, onSelect }) {
       </div>
 
       <div className="work-caption">
-        <div className="caption-left">
-          <span className="work-index">/{project.index}</span>
-          <h3 className="work-title">{project.title}</h3>
-          <span className="work-type">{project.type}</span>
+        <div className="caption-main">
+          <div className="caption-left">
+            <span className="work-index">/{project.index}</span>
+            <h3 className="work-title">{project.title}</h3>
+            <span className="work-type">{project.type}</span>
+          </div>
+          <span className="work-stack">{project.stack}</span>
         </div>
 
         <div className="caption-actions">
@@ -229,52 +227,99 @@ export default function App() {
         <header className="spec-bar">
           <div className="spec-left">
             <span>FOLIO ’26</span>
-            <span className="spec-tag">ISLAMABAD, PK</span>
+            <span className="spec-tag">{PROFILE.location}</span>
           </div>
 
-          <nav className="spec-links" aria-label="Links">
-            <a
-              href={PROFILE.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="spec-link"
-            >
-              <sup>01</sup>GitHub ↗
+          <nav className="spec-links" aria-label="Quick Links">
+            <a href="#work" className="spec-link">
+              <sup>01</sup>Work
             </a>
-            <a
-              href={PROFILE.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="spec-link"
-            >
-              <sup>02</sup>LinkedIn ↗
+            <a href="#skills" className="spec-link">
+              <sup>02</sup>Skills
+            </a>
+            <a href="#contact" className="spec-link">
+              <sup>03</sup>Contact
             </a>
             <a
               href={PROFILE.resumeUrl}
               download="Hamza Ahmad Mir - Frontend Dev.pdf"
-              className="spec-link"
+              className="spec-link spec-link-bright"
             >
-              <sup>03</sup>Resume PDF ↓
+              <sup>04</sup>Resume PDF ↓
             </a>
-            <button type="button" className="spec-link" onClick={copyEmail}>
-              <sup>04</sup>
-              {copied ? 'Copied Email' : 'Email'}
-            </button>
           </nav>
         </header>
 
-        {/* Monumental Typographic Masthead */}
+        {/* Monumental Typographic Masthead + Prominent Contact Directory */}
         <section className="masthead">
           <h1 className="hero-name">
             <span>HAMZA</span>
             <span className="hero-name-serif">Ahmad Mir</span>
           </h1>
 
-          <div className="masthead-subgrid">
+          <div className="masthead-grid">
             <div className="masthead-role-block">
-              <span className="role-kicker">DISCIPLINE</span>
+              <span className="role-kicker">ROLE &amp; FOCUS</span>
               <div className="role-display">
-                Frontend Engineer &amp; <em>UI/UX Designer</em>
+                Frontend Developer &amp; <em>UI/UX Designer</em>
+              </div>
+              <span className="role-edu">{PROFILE.education}</span>
+            </div>
+
+            {/* High-Visibility Contact Block */}
+            <div id="contact" className="contact-directory" aria-label="Contact Information">
+              <div className="contact-row">
+                <span className="contact-label">EMAIL</span>
+                <div className="contact-value-group">
+                  <a href={`mailto:${PROFILE.email}`} className="contact-value">
+                    {PROFILE.email}
+                  </a>
+                  <button
+                    type="button"
+                    className="copy-trigger"
+                    onClick={copyEmail}
+                  >
+                    [{copied ? 'COPIED' : 'COPY'}]
+                  </button>
+                </div>
+              </div>
+
+              <div className="contact-row">
+                <span className="contact-label">PHONE</span>
+                <a href="tel:+923456910939" className="contact-value">
+                  {PROFILE.phone}
+                </a>
+              </div>
+
+              <div className="contact-row">
+                <span className="contact-label">PROFILES</span>
+                <div className="contact-links-inline">
+                  <a
+                    href={PROFILE.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="contact-value"
+                  >
+                    GitHub ↗
+                  </a>
+                  <span className="contact-sep">/</span>
+                  <a
+                    href={PROFILE.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="contact-value"
+                  >
+                    LinkedIn ↗
+                  </a>
+                  <span className="contact-sep">/</span>
+                  <a
+                    href={PROFILE.resumeUrl}
+                    download="Hamza Ahmad Mir - Frontend Dev.pdf"
+                    className="contact-value contact-resume"
+                  >
+                    Resume PDF ↓
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -294,8 +339,46 @@ export default function App() {
           />
         </div>
 
+        {/* At-a-Glance Categorized Skills Section */}
+        <section id="skills" className="skills-section" aria-label="Categorized Skills">
+          <div className="section-head-row">
+            <h2 className="work-heading">
+              Technical <em>Capabilities</em>
+              <span className="work-count">(01 — 0{SKILL_CATEGORIES.length})</span>
+            </h2>
+            <span className="section-meta-label">CATEGORIZED SKILL INDEX</span>
+          </div>
+
+          <div className="skills-table">
+            {SKILL_CATEGORIES.map((group) => (
+              <div key={group.index} className="skill-group-row">
+                <div className="skill-cat-col">
+                  <span className="skill-cat-idx">/{group.index}</span>
+                  <h3 className="skill-cat-name">{group.category}</h3>
+                </div>
+
+                <div className="skill-items-col">
+                  <div className="skill-primary-list">
+                    {group.primary.map((item, i) => (
+                      <React.Fragment key={item}>
+                        <span className="skill-primary-item">{item}</span>
+                        {i < group.primary.length - 1 && (
+                          <span className="skill-dot" aria-hidden="true">
+                            ·
+                          </span>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                  <span className="skill-secondary-note">{group.secondary}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Selected Frontend Work */}
-        <section aria-label="Selected Frontends">
+        <section id="work" aria-label="Selected Frontends">
           <div className="work-header">
             <h2 className="work-heading">
               Selected <em>Frontends</em>
@@ -344,7 +427,7 @@ export default function App() {
         <section className="index-section" aria-label="Background and UX Work">
           <div className="index-col">
             <h2 className="index-heading">
-              Product <em>UX &amp; Systems</em>
+              UI/UX <em>Case Studies</em>
             </h2>
             <div className="index-list">
               <div className="index-row">
@@ -356,19 +439,19 @@ export default function App() {
               <div className="index-row">
                 <span className="row-primary">Saeed Book Bank Redesign</span>
                 <span className="row-secondary">
-                  Search &amp; Checkout Teardown
+                  Search &amp; Checkout Conversion Teardown
                 </span>
               </div>
               <div className="index-row">
-                <span className="row-primary">Frontend Architecture</span>
+                <span className="row-primary">FAST Literary Society (FLS)</span>
                 <span className="row-secondary">
-                  React, JavaScript, HTML/CSS, SDUI
+                  Graphic Designer · CRANE Magazine
                 </span>
               </div>
               <div className="index-row">
-                <span className="row-primary">Design Systems</span>
+                <span className="row-primary">Art &amp; Computing Societies</span>
                 <span className="row-secondary">
-                  Figma Auto-Layout &amp; Dev Handoff
+                  Event Branding · AniCon Poster
                 </span>
               </div>
             </div>
@@ -376,7 +459,7 @@ export default function App() {
 
           <div className="index-col">
             <h2 className="index-heading">
-              Background &amp; <em>Credentials</em>
+              Education &amp; <em>Certifications</em>
             </h2>
             <div className="index-list">
               <div className="index-row">
@@ -385,20 +468,20 @@ export default function App() {
               </div>
               <div className="index-row">
                 <span className="row-primary">
-                  Enterprise Design Thinking
+                  Frontend Development Libraries V8
                 </span>
-                <span className="row-secondary">IBM Certified</span>
+                <span className="row-secondary">freeCodeCamp · Jun 2026</span>
               </div>
               <div className="index-row">
                 <span className="row-primary">
-                  Frontend Development Libraries V8
+                  Enterprise Design Thinking Practitioner
                 </span>
-                <span className="row-secondary">freeCodeCamp</span>
+                <span className="row-secondary">IBM Certified · Jun 2026</span>
               </div>
               <div className="index-row">
-                <span className="row-primary">Graphic Designer</span>
+                <span className="row-primary">Direct Contact</span>
                 <span className="row-secondary">
-                  FAST Literary &amp; Computing Societies
+                  {PROFILE.email} · {PROFILE.phone}
                 </span>
               </div>
             </div>
@@ -406,7 +489,7 @@ export default function App() {
         </section>
 
         <footer className="minimal-footer">
-          <span>{PROFILE.name} — ALL RIGHTS RESERVED</span>
+          <span>{PROFILE.name} — {PROFILE.email} — {PROFILE.phone}</span>
           <span>{PROFILE.location}</span>
         </footer>
       </main>
