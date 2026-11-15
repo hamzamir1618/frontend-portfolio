@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import SoftAurora from './components/SoftAurora'
 import LogoLoop from './components/LogoLoop'
-import { PROFILE, PROJECTS, SKILL_CATEGORIES } from './data/projects'
+import { PROFILE, PROJECTS, SKILL_COLUMNS } from './data/projects'
 
 const STACK_ITEMS = [
   { label: 'React 18', voice: 'sans', num: '01' },
@@ -86,7 +86,7 @@ function WorkItem({ project, previewMode, isMobile, onSelect }) {
         onClick={() => onSelect(project)}
         role="button"
         tabIndex={0}
-        aria-label={`Preview ${project.title}`}
+        aria-label={`Open interactive preview of ${project.title}`}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
@@ -126,32 +126,20 @@ function WorkItem({ project, previewMode, isMobile, onSelect }) {
       </div>
 
       <div className="work-caption">
-        <div className="caption-main">
-          <div className="caption-left">
-            <span className="work-index">/{project.index}</span>
-            <h3 className="work-title">{project.title}</h3>
-            <span className="work-type">{project.type}</span>
-          </div>
-          <span className="work-stack">{project.stack}</span>
+        <div className="caption-left">
+          <span className="work-index">/{project.index}</span>
+          <h3 className="work-title">{project.title}</h3>
+          <span className="work-type">{project.type}</span>
         </div>
 
-        <div className="caption-actions">
-          <button
-            type="button"
-            className="caption-link"
-            onClick={() => onSelect(project)}
-          >
-            [Preview]
-          </button>
-          <a
-            href={project.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="caption-link"
-          >
-            Visit ↗
-          </a>
-        </div>
+        <a
+          href={project.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="caption-link"
+        >
+          Visit ↗
+        </a>
       </div>
     </article>
   )
@@ -161,7 +149,6 @@ export default function App() {
   const [previewMode, setPreviewMode] = useState('live')
   const [activeProject, setActiveProject] = useState(null)
   const [viewport, setViewport] = useState('desktop')
-  const [copied, setCopied] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
@@ -196,12 +183,6 @@ export default function App() {
     }
   }, [activeProject])
 
-  const copyEmail = () => {
-    navigator.clipboard?.writeText(PROFILE.email)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1800)
-  }
-
   return (
     <>
       {/* Subtle Monochrome Silver/Slate SoftAurora */}
@@ -223,34 +204,13 @@ export default function App() {
       </div>
 
       <main className="canvas">
-        {/* Top Monospace Index Strip */}
+        {/* Minimal Edition Strip (Zero Redundant Buttons) */}
         <header className="spec-bar">
-          <div className="spec-left">
-            <span>FOLIO ’26</span>
-            <span className="spec-tag">{PROFILE.location}</span>
-          </div>
-
-          <nav className="spec-links" aria-label="Quick Links">
-            <a href="#work" className="spec-link">
-              <sup>01</sup>Work
-            </a>
-            <a href="#skills" className="spec-link">
-              <sup>02</sup>Skills
-            </a>
-            <a href="#contact" className="spec-link">
-              <sup>03</sup>Contact
-            </a>
-            <a
-              href={PROFILE.resumeUrl}
-              download="Hamza Ahmad Mir - Frontend Dev.pdf"
-              className="spec-link spec-link-bright"
-            >
-              <sup>04</sup>Resume PDF ↓
-            </a>
-          </nav>
+          <span>FOLIO ’26</span>
+          <span className="spec-tag">{PROFILE.location}</span>
         </header>
 
-        {/* Monumental Typographic Masthead + Prominent Contact Directory */}
+        {/* Monumental Typographic Masthead + Clear Contact Info */}
         <section className="masthead">
           <h1 className="hero-name">
             <span>HAMZA</span>
@@ -259,29 +219,19 @@ export default function App() {
 
           <div className="masthead-grid">
             <div className="masthead-role-block">
-              <span className="role-kicker">ROLE &amp; FOCUS</span>
               <div className="role-display">
                 Frontend Developer &amp; <em>UI/UX Designer</em>
               </div>
               <span className="role-edu">{PROFILE.education}</span>
             </div>
 
-            {/* High-Visibility Contact Block */}
-            <div id="contact" className="contact-directory" aria-label="Contact Information">
+            {/* Clean, Visible Contact Directory — Each Link Appears Once */}
+            <div className="contact-directory" aria-label="Contact Information">
               <div className="contact-row">
                 <span className="contact-label">EMAIL</span>
-                <div className="contact-value-group">
-                  <a href={`mailto:${PROFILE.email}`} className="contact-value">
-                    {PROFILE.email}
-                  </a>
-                  <button
-                    type="button"
-                    className="copy-trigger"
-                    onClick={copyEmail}
-                  >
-                    [{copied ? 'COPIED' : 'COPY'}]
-                  </button>
-                </div>
+                <a href={`mailto:${PROFILE.email}`} className="contact-value">
+                  {PROFILE.email}
+                </a>
               </div>
 
               <div className="contact-row">
@@ -292,7 +242,7 @@ export default function App() {
               </div>
 
               <div className="contact-row">
-                <span className="contact-label">PROFILES</span>
+                <span className="contact-label">LINKS</span>
                 <div className="contact-links-inline">
                   <a
                     href={PROFILE.github}
@@ -339,45 +289,7 @@ export default function App() {
           />
         </div>
 
-        {/* At-a-Glance Categorized Skills Section */}
-        <section id="skills" className="skills-section" aria-label="Categorized Skills">
-          <div className="section-head-row">
-            <h2 className="work-heading">
-              Technical <em>Capabilities</em>
-              <span className="work-count">(01 — 0{SKILL_CATEGORIES.length})</span>
-            </h2>
-            <span className="section-meta-label">CATEGORIZED SKILL INDEX</span>
-          </div>
-
-          <div className="skills-table">
-            {SKILL_CATEGORIES.map((group) => (
-              <div key={group.index} className="skill-group-row">
-                <div className="skill-cat-col">
-                  <span className="skill-cat-idx">/{group.index}</span>
-                  <h3 className="skill-cat-name">{group.category}</h3>
-                </div>
-
-                <div className="skill-items-col">
-                  <div className="skill-primary-list">
-                    {group.primary.map((item, i) => (
-                      <React.Fragment key={item}>
-                        <span className="skill-primary-item">{item}</span>
-                        {i < group.primary.length - 1 && (
-                          <span className="skill-dot" aria-hidden="true">
-                            ·
-                          </span>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                  <span className="skill-secondary-note">{group.secondary}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Selected Frontend Work */}
+        {/* Selected Frontend Work (Top Priority) */}
         <section id="work" aria-label="Selected Frontends">
           <div className="work-header">
             <h2 className="work-heading">
@@ -423,74 +335,34 @@ export default function App() {
           </div>
         </section>
 
-        {/* Editorial Typographic Index */}
-        <section className="index-section" aria-label="Background and UX Work">
-          <div className="index-col">
-            <h2 className="index-heading">
-              UI/UX <em>Case Studies</em>
+        {/* Clean 4-Column Categorized Skills & Background at the Bottom */}
+        <section id="skills" className="skills-bottom" aria-label="Skills and Background">
+          <div className="skills-bottom-header">
+            <h2 className="work-heading">
+              Skills &amp; <em>Capabilities</em>
             </h2>
-            <div className="index-list">
-              <div className="index-row">
-                <span className="row-primary">Food Ordering Mobile App</span>
-                <span className="row-secondary">
-                  Figma Prototype · Smart Wait UX
-                </span>
-              </div>
-              <div className="index-row">
-                <span className="row-primary">Saeed Book Bank Redesign</span>
-                <span className="row-secondary">
-                  Search &amp; Checkout Conversion Teardown
-                </span>
-              </div>
-              <div className="index-row">
-                <span className="row-primary">FAST Literary Society (FLS)</span>
-                <span className="row-secondary">
-                  Graphic Designer · CRANE Magazine
-                </span>
-              </div>
-              <div className="index-row">
-                <span className="row-primary">Art &amp; Computing Societies</span>
-                <span className="row-secondary">
-                  Event Branding · AniCon Poster
-                </span>
-              </div>
-            </div>
           </div>
 
-          <div className="index-col">
-            <h2 className="index-heading">
-              Education &amp; <em>Certifications</em>
-            </h2>
-            <div className="index-list">
-              <div className="index-row">
-                <span className="row-primary">B.S. Computer Science</span>
-                <span className="row-secondary">FAST NUCES · 2022–2026</span>
+          <div className="skills-columns">
+            {SKILL_COLUMNS.map((col, idx) => (
+              <div key={col.title} className="skill-column">
+                <div className="skill-col-head">
+                  <span className="skill-col-num">0{idx + 1}</span>
+                  <h3 className="skill-col-title">{col.title}</h3>
+                </div>
+                <ul className="skill-col-list">
+                  {col.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </div>
-              <div className="index-row">
-                <span className="row-primary">
-                  Frontend Development Libraries V8
-                </span>
-                <span className="row-secondary">freeCodeCamp · Jun 2026</span>
-              </div>
-              <div className="index-row">
-                <span className="row-primary">
-                  Enterprise Design Thinking Practitioner
-                </span>
-                <span className="row-secondary">IBM Certified · Jun 2026</span>
-              </div>
-              <div className="index-row">
-                <span className="row-primary">Direct Contact</span>
-                <span className="row-secondary">
-                  {PROFILE.email} · {PROFILE.phone}
-                </span>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
         <footer className="minimal-footer">
-          <span>{PROFILE.name} — {PROFILE.email} — {PROFILE.phone}</span>
-          <span>{PROFILE.location}</span>
+          <span>© 2026 {PROFILE.name}</span>
+          <span>Click any project frame to interact live</span>
         </footer>
       </main>
 
